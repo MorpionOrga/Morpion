@@ -15,8 +15,8 @@
 //Définie le port
 //#define PORT 80
 #define PORT 14843
-#define WM_TOTO (WM_USER + 1) 
-#define WM_TATA (WM_USER + 2) 
+#define WM_ACCEPT (WM_USER + 1) 
+#define WM_READ (WM_USER + 2) 
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -107,7 +107,7 @@ int main() {
         std::cout << "Listen successful\n";
     }
 
-    if (WSAAsyncSelect(hsocket, hWnd, WM_TOTO, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR) {
+    if (WSAAsyncSelect(hsocket, hWnd, WM_ACCEPT, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR) {
         printf("WSAAsyncSelect failed\n");
         closesocket(hsocket);
         WSACleanup();
@@ -136,7 +136,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
     switch (message)
     {
-    case WM_TOTO:
+    case WM_ACCEPT:
     {
         // connexion des cleitn 
         std::cout << "TOTO successful\n";
@@ -152,7 +152,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             std::cout << "Acceptation de la connexion entrante." << std::endl;
         }
 
-        if (WSAAsyncSelect(Accept, hWnd, WM_TATA, FD_READ | FD_CLOSE) == SOCKET_ERROR) {
+        if (WSAAsyncSelect(Accept, hWnd, WM_READ, FD_READ | FD_CLOSE) == SOCKET_ERROR) {
             printf("WSAAsyncSelect failed for clientSocket\n");
             closesocket(Accept);
             WSACleanup();
@@ -160,15 +160,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else {
             std::cout << "WSAAsyncSelect successful for clientSocket\n";
+            const char* message = "Test! Again";
+            send(Accept, message, strlen(message), 0);
+            std::cout << "Message envoyé au client: " << message << std::endl;
         }
         break;
     }
-    case WM_TATA:
+    case WM_READ:
     {
         // message des clients
         std::cout << "TATA successful\n";
         char buffer[4096];
         int bytesRead = recv(Accept, buffer, sizeof(buffer), 0);
+
         if (bytesRead > 0) {
             buffer[bytesRead] = '\0';
             std::cout << "Message du client : " << buffer << std::endl;
