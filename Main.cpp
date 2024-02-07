@@ -2,7 +2,7 @@
 #include "Grid.h"
 #include <iostream>
 
-int main()
+void game()
 {
     sf::RenderWindow window(sf::VideoMode(300, 350), "Morpion");
 
@@ -36,6 +36,4 @@ int main()
             window.close();
         }
     }
-
-    return 0;
 }
