@@ -58,7 +58,7 @@ int main() {
     MyRegisterClass(hInstance);
     HWND hWnd = InitInstance(hInstance, 0);
 
-    // initialisation de winsock
+    // Initialisation de winsock
     WSADATA wsaData;
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
