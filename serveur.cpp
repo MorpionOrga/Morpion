@@ -85,7 +85,7 @@ int main() {
     serverAddress.sin_port = htons(PORT);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    // Liaison du socket
+    // Liaison du socket / Connexion au serveur
     if (bind(hsocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
         printf("Bind failed\n");
         closesocket(hsocket);
@@ -172,6 +172,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (bytesRead > 0) {
             buffer[bytesRead] = '\0';
             std::cout << "Message du client : " << buffer << std::endl;
+
+            // Envoyer un message de réponse au client
+            const char* response = "Message recu par le serveur !";
+            int bytesSent = send(Accept, response, strlen(response), 0);
+            if (bytesSent == SOCKET_ERROR) {
+                // Gestion de l'erreur
+                std::cerr << "Erreur lors de l'envoi du message de réponse au client." << std::endl;
+            }
+            else {
+                // Message envoyé avec succès
+                std::cout << "Message envoyé au client : " << response << std::endl;
+            }
         }
         else if (bytesRead == 0) {
             // La connexion a été fermée par le client
@@ -186,6 +198,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     }
+
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
