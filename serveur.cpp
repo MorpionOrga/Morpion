@@ -138,7 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_ACCEPT:
     {
-        // connexion des clients
+        // Connexion des clients
         std::cout << "Accept successful\n";
 
         Accept = accept(wParam, nullptr, nullptr);
