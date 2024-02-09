@@ -1,7 +1,7 @@
-//Empeche d'avoir certains avertissements liés à l'utilisation de fonctions risquées
+ï»¿//Empeche d'avoir certains avertissements liï¿½s ï¿½ l'utilisation de fonctions risquï¿½es
 #define _CRT_SECURE_NO_WARNINGS
 
-//On se lie à la bibliothèque ws2_32.lib
+//On se lie ï¿½ la bibliothï¿½que ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
 
 //Include que nous allons utiliser
@@ -11,12 +11,24 @@
 #include <Windows.h>
 #include <process.h>
 #include <iostream>
+#include <iostream>
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/error/en.h"
 
-//Définie le port
+
+
+//Dï¿½finie le port
 //#define PORT 80
 #define PORT 14843
 #define WM_ACCEPT (WM_USER + 1) 
 #define WM_READ (WM_USER + 2) 
+
+int xTest = 100;
+int yTest = 100;
+using namespace rapidjson;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -50,6 +62,33 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
     return hWnd;
 }
 
+void handleClient(const std::string& jsonRequest)
+{
+    rapidjson::Document document;
+    document.Parse(jsonRequest.c_str());
+
+    if (document.HasParseError()) {
+        std::cerr << "Error parsing JSON: " << GetParseError_En(document.GetParseError()) << std::endl;
+        return;
+    }
+
+    if (document.IsObject()) {
+        const char* messageType = document["type"].GetString();
+
+        if (std::strcmp(messageType, "move") == 0) {
+            int x = document["x"].GetInt();
+            int y = document["y"].GetInt();
+
+            std::cout << "Received from client: (" << x << ", " << y << ")" << std::endl;
+        }
+        else {
+            std::cerr << "Unknown message type: " << messageType << std::endl;
+        }
+    }
+    else {
+        std::cerr << "Invalid JSON format. Expected an object." << std::endl;
+    }
+}
 
 int main() {
     int iResult;
@@ -58,7 +97,7 @@ int main() {
     MyRegisterClass(hInstance);
     HWND hWnd = InitInstance(hInstance, 0);
 
-    // Initialisation de winsock
+    // initialisation de winsock
     WSADATA wsaData;
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0) {
@@ -69,7 +108,7 @@ int main() {
         std::cout << "WSAStartup successful\n";
     }
 
-    // Création de la socket
+    // Crï¿½ation de la socket
     SOCKET hsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (hsocket == INVALID_SOCKET) {
         printf("socket failed\n");
@@ -85,7 +124,7 @@ int main() {
     serverAddress.sin_port = htons(PORT);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
 
-    // Liaison du socket / Connexion au serveur
+    // Liaison du socket
     if (bind(hsocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
         printf("Bind failed\n");
         closesocket(hsocket);
@@ -138,8 +177,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     {
     case WM_ACCEPT:
     {
-        // Connexion des clients
-        std::cout << "Accept successful\n";
+        // connexion des cleitn 
+        std::cout << "TOTO successful\n";
 
         Accept = accept(wParam, nullptr, nullptr);
         if (Accept == INVALID_SOCKET) {
@@ -160,46 +199,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else {
             std::cout << "WSAAsyncSelect successful for clientSocket\n";
+            const char* message = "Test! Again";
+            send(Accept, message, strlen(message), 0);
+            std::cout << "Message envoyï¿½ au client: " << message << std::endl;
         }
         break;
     }
     case WM_READ:
     {
-        // Message des clients
-        std::cout << "Read successful\n";
+        // message des clients
+        std::cout << "TATA successful\n";
         char buffer[4096];
         int bytesRead = recv(Accept, buffer, sizeof(buffer), 0);
-        if (bytesRead > 0) {
-            buffer[bytesRead] = '\0';
-            std::cout << "Message du client : " << buffer << std::endl;
-
-            // Envoyer un message de réponse au client
-            const char* response = "Message recu par le serveur !";
-            int bytesSent = send(Accept, response, strlen(response), 0);
-            if (bytesSent == SOCKET_ERROR) {
-                // Gestion de l'erreur
-                std::cerr << "Erreur lors de l'envoi du message de réponse au client." << std::endl;
-            }
-            else {
-                // Message envoyé avec succès
-                std::cout << "Message envoyé au client : " << response << std::endl;
-            }
-        }
-        else if (bytesRead == 0) {
-            // La connexion a été fermée par le client
-            std::cout << "Client disconnected." << std::endl;
-            closesocket(Accept);
-            Accept = INVALID_SOCKET;
-        }
-        else {
-            std::cout << "Erreur lors de la réception des données du client." << std::endl;
-            closesocket(Accept);
-            Accept = INVALID_SOCKET;
-        }
+        buffer[bytesRead] = '\0';
+        handleClient(buffer);
         break;
     }
-
-
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
