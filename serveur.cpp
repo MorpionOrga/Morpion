@@ -18,7 +18,6 @@
 #include "rapidjson/error/en.h"
 
 
-
 //Définie le port
 //#define PORT 80
 #define PORT 14843
@@ -67,12 +66,7 @@ void handleClient(const std::string& jsonRequest)
     rapidjson::Document document;
     document.Parse(jsonRequest.c_str());
 
-    if (document.HasParseError()) {
-        std::cerr << "Error parsing JSON: " << GetParseError_En(document.GetParseError()) << std::endl;
-        return;
-    }
-
-    if (document.IsObject()) {
+    if (!document.HasParseError() || document.IsObject()) {
         const char* messageType = document["type"].GetString();
 
         if (std::strcmp(messageType, "move") == 0) {
@@ -80,6 +74,10 @@ void handleClient(const std::string& jsonRequest)
             int y = document["y"].GetInt();
 
             std::cout << "Received from client: (" << x << ", " << y << ")" << std::endl;
+        }
+        else if (std::strcmp(messageType, "player") == 0) {
+            std::string player = document["name"].GetString();
+            std::cout << "Received from client: (" << player << ")" << std::endl;
         }
         else {
             std::cerr << "Unknown message type: " << messageType << std::endl;
@@ -178,8 +176,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_ACCEPT:
     {
         // connexion des cleitn 
-        std::cout << "TOTO successful\n";
-
         Accept = accept(wParam, nullptr, nullptr);
         if (Accept == INVALID_SOCKET) {
             std::cout << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
@@ -199,16 +195,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         else {
             std::cout << "WSAAsyncSelect successful for clientSocket\n";
-            const char* message = "Test! Again";
-            send(Accept, message, strlen(message), 0);
-            std::cout << "Message envoyé au client: " << message << std::endl;
         }
         break;
     }
     case WM_READ:
     {
         // message des clients
-        std::cout << "TATA successful\n";
         char buffer[4096];
         int bytesRead = recv(Accept, buffer, sizeof(buffer), 0);
         buffer[bytesRead] = '\0';
