@@ -17,6 +17,8 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/error/en.h"
 
+#include "Thread.h"
+
 
 //Définie le port
 //#define PORT 80
@@ -51,6 +53,22 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     return RegisterClassExW(&wcex);
 }
+
+class MyThread : public Thread
+{
+public:
+    virtual bool Run() override {
+        std::cout << "Thread started" << std::endl;
+        // Simulation d'une tâche
+        for (int i = 0; i < 5; ++i) {
+            std::cout << "Task " << i << std::endl;
+            Sleep(1000); // Attente d'une seconde
+        }
+        std::cout << "Thread finished" << std::endl;
+        return true;
+    }
+};
+
 
 
 HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
@@ -90,6 +108,22 @@ void handleClient(const std::string& jsonRequest)
 
 int main() {
     int iResult;
+
+    // --test
+    MyThread thread;
+    if (thread.Start())
+        thread.Wait();
+
+    MyThread thread2;
+    if (thread2.Start())
+        thread2.Wait();
+
+    MyThread thread3;
+    thread3.Start();
+
+    MyThread thread4;
+    thread4.Start();
+    // --test
 
     HINSTANCE hInstance = GetModuleHandle(0);
     MyRegisterClass(hInstance);
