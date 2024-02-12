@@ -16,7 +16,7 @@ public:
     const char* currentPlayer;
     std::string playerName;
     char value;
-    SOCKET players;
+
     player* pList[10];
     
 };

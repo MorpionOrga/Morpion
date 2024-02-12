@@ -2,17 +2,21 @@
 
 player::player() 
 {
+	for (int i = 0; i < 9; i++) {
+		pList[i] = new player(); 
+	}
 	playerName = "";
 	value = ' ';
-	players = INVALID_SOCKET;
 }
 
 player::~player() {
-
+	for (int i = 0; i < 9; i++) {
+		delete pList[i]; 
+	}
 }
 
 void player::addPlayer(std::string name) {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		if (pList[i]->playerName != "")
 		{
@@ -43,7 +47,7 @@ void player::handlePlayer(std::string name)
 }
 
 BOOL player::pEmpty(std::string name) {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		if (name == pList[i]->playerName)
 		{
@@ -55,7 +59,7 @@ BOOL player::pEmpty(std::string name) {
 
 int player::getIndexFromName(std::string name)
 {
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 9; i++)
 	{
 		if (name == pList[i]->playerName)
 		{
