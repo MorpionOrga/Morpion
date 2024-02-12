@@ -131,14 +131,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Case.cpp" />
+    <ClCompile Include="ClientHandler.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="serveur.cpp" />
+    <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Case.h" />
+    <ClInclude Include="ClientHandler.h" />
+    <ClInclude Include="framework.h" />
     <ClInclude Include="Grid.h" />
-    <ClInclude Include="serveur.h" />
+    <ClInclude Include="Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
