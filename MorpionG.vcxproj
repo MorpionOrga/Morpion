@@ -133,11 +133,14 @@
     <ClCompile Include="Case.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="player.cpp" />
     <ClCompile Include="serveur.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Case.h" />
+    <ClInclude Include="framework.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="player.h" />
     <ClInclude Include="serveur.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

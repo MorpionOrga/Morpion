@@ -4,25 +4,9 @@
 //On se lie à la bibliothèque ws2_32.lib
 #pragma comment(lib, "ws2_32.lib")
 
-//Include que nous allons utiliser
-#include <WinSock2.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <Windows.h>
-#include <process.h>
-#include <iostream>
-#include <iostream>
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/error/en.h"
+#include "framework.h"
+#include "player.h"
 
-
-//Définie le port
-//#define PORT 80
-#define PORT 14843
-#define WM_ACCEPT (WM_USER + 1) 
-#define WM_READ (WM_USER + 2) 
 
 int xTest = 100;
 int yTest = 100;
@@ -61,6 +45,7 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
     return hWnd;
 }
 
+player Player;
 void handleClient(const std::string& jsonRequest)
 {
     rapidjson::Document document;
@@ -72,12 +57,14 @@ void handleClient(const std::string& jsonRequest)
         if (std::strcmp(messageType, "move") == 0) {
             int x = document["x"].GetInt();
             int y = document["y"].GetInt();
+            Player.currentPlayer = document["name"].GetString();
 
             std::cout << "Received from client: (" << x << ", " << y << ")" << std::endl;
         }
         else if (std::strcmp(messageType, "player") == 0) {
-            std::string player = document["name"].GetString();
-            std::cout << "Received from client: (" << player << ")" << std::endl;
+            std::string name = document["name"].GetString();
+            Player.handlePlayer(name);
+            std::cout << "Received from client: (" << name << ")" << std::endl;
         }
         else {
             std::cerr << "Unknown message type: " << messageType << std::endl;

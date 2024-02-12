@@ -1,6 +1,5 @@
 #include "Grid.h"
 
-
 Grid::Grid() : Xplay(true)
 {
     for (int i = 0; i < gridSize; ++i)
@@ -21,14 +20,13 @@ void Grid::handleEvent(sf::Event event)
 
         if (grid[x][y].getValue() == ' ' && !checkWin('X') && !checkWin('O'))
         {
-            if (Xplay) {
-                grid[x][y].setValue('X');
+            if (Player.currentPlayer == Player.pList[1]->playerName) {
+                grid[x][y].setValue();
             }
-            else {
-                grid[x][y].setValue('O');
+            else if (Player.currentPlayer == Player.pList[2]->playerName) {
+                grid[x][y].setValue();
             }
 
-            Xplay = !Xplay;
         }
     }
 }

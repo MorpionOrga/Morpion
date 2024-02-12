@@ -31,7 +31,7 @@ char Case::getValue()
     return value;
 }
 
-void Case::setValue(char value)
+void Case::setValue()
 {
-    this->value = value;
+    this->value = Player.value;
 }

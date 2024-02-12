@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include "player.h"
 
 class Case {
 public:
@@ -7,8 +8,9 @@ public:
     sf::Text letter;
     void draw(sf::RenderWindow& window, int x, int y);
     char getValue();
-    void setValue(char val);
+    void setValue();
 
 private:
+    player Player;
     char value;
 };
