@@ -8,9 +8,9 @@ public:
     sf::Font font;
     sf::Text letter;
     void draw(sf::RenderWindow& window, int x, int y);
-    char getValue();
+    int getValue();
     void setValue(player* Player);
 
 private:
-    char value;
+    int value;
 };

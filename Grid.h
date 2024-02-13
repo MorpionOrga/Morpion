@@ -11,7 +11,7 @@ public:
     Grid();
     bool handleEvent(player* player, int x, int y);
     void update();
-    bool checkWin(char player);
+    bool checkWin(int value);
     bool isFull();
     sf::Text whoPlay;
     sf::Font font;

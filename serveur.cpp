@@ -62,19 +62,9 @@ void handleClient(const std::string& jsonRequest , SOCKET hsocket)
             xTest = document["x"].GetInt();
             yTest = document["y"].GetInt();
             Player.currentPlayer = document["name"].GetString();
-            std::cout << Player.currentPlayer << std::endl;
             if (gridGame.handleEvent(&Player, xTest, yTest))
             {
-                int value = 0;
-                if (gridGame.grid[xTest][yTest].getValue() == 'X')
-                {
-                    value = 1;
-                }
-                else
-                {
-                    value = 2;
-                }
-                sendMSG.sendMove(xTest, yTest, value, hsocket);
+                sendMSG.sendMove(xTest, yTest, gridGame.grid[xTest][yTest].getValue(), hsocket);
             }
             std::cout << "Received from client: (" << xTest << ", " << yTest << ")" << std::endl;
         }

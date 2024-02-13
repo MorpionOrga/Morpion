@@ -3,7 +3,7 @@
 player::player()
 {
 	playerName = "";
-	value = ' ';
+	value = 0;
 }
 
 //player::~player() {
@@ -19,7 +19,7 @@ void player::initList()
 	for (int i = 0; i < 9; i++) {
 		pList[i] = new player();
 		pList[i]->playerName = "";
-		pList[i]->value = ' ';
+		pList[i]->value = 0;
 	}
 }
 
@@ -31,16 +31,16 @@ void player::addPlayer(std::string name) {
 			if (i == 0)
 			{
 				pList[i]->playerName = name;
-				pList[i]->value = 'X';
+				pList[i]->value = 1;
 			}
 			else if (i == 1)
 			{
 				pList[i]->playerName = name;
-				pList[i]->value = 'O';
+				pList[i]->value = 2;
 			}
 			else {
 				pList[i]->playerName = name;
-				pList[i]->value = ' ';
+				pList[i]->value = 0;
 			}
 		}
 	}

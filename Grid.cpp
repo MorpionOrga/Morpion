@@ -13,7 +13,7 @@ Grid::Grid() : Xplay(true)
 
 bool Grid::handleEvent(player* player, int x, int y)
 {
-    if (grid[x][y].getValue() == ' ' && !checkWin('X') && !checkWin('O'))
+    if (grid[x][y].getValue() == 0 && !checkWin('X') && !checkWin('O'))
     {
         if (player->currentPlayer == player->pList[0]->playerName && Xplay) {
             grid[x][y].setValue(player);
@@ -35,12 +35,12 @@ void Grid::update()
     Xplay = !Xplay;
 }
 
-bool Grid::checkWin(char player)
+bool Grid::checkWin(int value)
 {
     // Vérification des lignes
     for (int i = 0; i < gridSize; ++i)
     {
-        if (grid[i][0].getValue() == player && grid[i][1].getValue() == player && grid[i][2].getValue() == player)
+        if (grid[i][0].getValue() == value && grid[i][1].getValue() == value && grid[i][2].getValue() == value)
         {
             return true;
         }
@@ -49,19 +49,19 @@ bool Grid::checkWin(char player)
     // Vérification des colonnes
     for (int j = 0; j < gridSize; ++j)
     {
-        if (grid[0][j].getValue() == player && grid[1][j].getValue() == player && grid[2][j].getValue() == player)
+        if (grid[0][j].getValue() == value && grid[1][j].getValue() == value && grid[2][j].getValue() == value)
         {
             return true;
         }
     }
 
     // Vérification des diagonales
-    if (grid[0][0].getValue() == player && grid[1][1].getValue() == player && grid[2][2].getValue() == player)
+    if (grid[0][0].getValue() == value && grid[1][1].getValue() == value && grid[2][2].getValue() == value)
     {
         return true;
     }
 
-    if (grid[0][2].getValue() == player && grid[1][1].getValue() == player && grid[2][0].getValue() == player)
+    if (grid[0][2].getValue() == value && grid[1][1].getValue() == value && grid[2][0].getValue() == value)
     {
         return true;
     }
