@@ -1,24 +1,32 @@
 #include "player.h"
 
-player::player() 
+player::player()
 {
-	for (int i = 0; i < 9; i++) {
-		pList[i] = new player(); 
-	}
 	playerName = "";
 	value = ' ';
 }
 
-player::~player() {
+//player::~player() {
+//	for (int i = 0; i < 9; i++) {
+//		if (pList[i] != nullptr) {
+//			delete pList[i];
+//		}
+//	}
+//}
+
+void player::initList()
+{
 	for (int i = 0; i < 9; i++) {
-		delete pList[i]; 
+		pList[i] = new player();
+		pList[i]->playerName = "";
+		pList[i]->value = ' ';
 	}
 }
 
 void player::addPlayer(std::string name) {
 	for (int i = 0; i < 9; i++)
 	{
-		if (pList[i]->playerName != "")
+		if (pList[i]->playerName == "")
 		{
 			if (i == 0)
 			{
@@ -40,13 +48,15 @@ void player::addPlayer(std::string name) {
 
 void player::handlePlayer(std::string name)
 {
+
 	if (pEmpty(name))
 	{
 		addPlayer(name);
-	}	
+	}
 }
 
 BOOL player::pEmpty(std::string name) {
+
 	for (int i = 0; i < 9; i++)
 	{
 		if (name == pList[i]->playerName)
@@ -66,7 +76,7 @@ int player::getIndexFromName(std::string name)
 			return i;
 		}
 	}
-	return NULL;
+	return -1;
 }
 
 char player::getValue()

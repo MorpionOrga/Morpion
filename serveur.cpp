@@ -6,12 +6,16 @@
 
 #include "framework.h"
 #include "player.h"
+#include "grid.h"
+#include "responsValue.h"
 
-
-int xTest = 100;
-int yTest = 100;
+int xTest ;
+int yTest ;
 using namespace rapidjson;
 
+player Player;
+Grid gridGame;
+Message sendMSG;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -45,8 +49,8 @@ HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
     return hWnd;
 }
 
-player Player;
-void handleClient(const std::string& jsonRequest)
+
+void handleClient(const std::string& jsonRequest , SOCKET hsocket)
 {
     rapidjson::Document document;
     document.Parse(jsonRequest.c_str());
@@ -55,11 +59,24 @@ void handleClient(const std::string& jsonRequest)
         const char* messageType = document["type"].GetString();
 
         if (std::strcmp(messageType, "move") == 0) {
-            int x = document["x"].GetInt();
-            int y = document["y"].GetInt();
+            xTest = document["x"].GetInt();
+            yTest = document["y"].GetInt();
             Player.currentPlayer = document["name"].GetString();
-
-            std::cout << "Received from client: (" << x << ", " << y << ")" << std::endl;
+            std::cout << Player.currentPlayer << std::endl;
+            if (gridGame.handleEvent(&Player, xTest, yTest))
+            {
+                int value = 0;
+                if (gridGame.grid[xTest][yTest].getValue() == 'X')
+                {
+                    value = 1;
+                }
+                else
+                {
+                    value = 2;
+                }
+                sendMSG.sendMove(xTest, yTest, value, hsocket);
+            }
+            std::cout << "Received from client: (" << xTest << ", " << yTest << ")" << std::endl;
         }
         else if (std::strcmp(messageType, "player") == 0) {
             std::string name = document["name"].GetString();
@@ -75,7 +92,9 @@ void handleClient(const std::string& jsonRequest)
     }
 }
 
+
 int main() {
+    Player.initList();
     int iResult;
 
     HINSTANCE hInstance = GetModuleHandle(0);
@@ -141,13 +160,17 @@ int main() {
         std::cout << "WSAAsyncSelect successful\n";
     }
 
+    
+
     MSG msg;
     while (GetMessage(&msg, nullptr, 0, 0))
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
+    
+    
+    
     WSACleanup();
 
     return 0;
@@ -191,7 +214,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         char buffer[4096];
         int bytesRead = recv(Accept, buffer, sizeof(buffer), 0);
         buffer[bytesRead] = '\0';
-        handleClient(buffer);
+        handleClient(buffer , Accept);
         break;
     }
     case WM_DESTROY:

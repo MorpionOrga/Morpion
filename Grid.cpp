@@ -11,50 +11,28 @@ Grid::Grid() : Xplay(true)
     }
 }
 
-void Grid::handleEvent(sf::Event event)
+bool Grid::handleEvent(player* player, int x, int y)
 {
-    if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+    if (grid[x][y].getValue() == ' ' && !checkWin('X') && !checkWin('O'))
     {
-        int x = (event.mouseButton.x / 100);
-        int y = ((event.mouseButton.y - 50) / 100);
-
-        if (grid[x][y].getValue() == ' ' && !checkWin('X') && !checkWin('O'))
-        {
-            if (Player.currentPlayer == Player.pList[1]->playerName) {
-                grid[x][y].setValue();
-            }
-            else if (Player.currentPlayer == Player.pList[2]->playerName) {
-                grid[x][y].setValue();
-            }
-
+        if (player->currentPlayer == player->pList[0]->playerName && Xplay) {
+            grid[x][y].setValue(player);
+            update();
+            return true;
         }
+        else if (player->currentPlayer == player->pList[1]->playerName && !Xplay) {
+            grid[x][y].setValue(player);
+            update();
+            return true;
+        }
+        return false;
     }
+    return false;
 }
 
 void Grid::update()
 {
-    font.loadFromFile("font/arial.ttf");
-
-    whoPlay.setFont(font);
-    whoPlay.setCharacterSize(20);
-    whoPlay.setString(Xplay ? "Tour de X" : "Tour de O");
-    whoPlay.setPosition(110, 10);
-}
-void Grid::draw(sf::RenderWindow& window)
-{
-    window.draw(whoPlay);
-
-    for (int i = 0; i < gridSize; ++i) {
-        for (int j = 0; j < gridSize; ++j) {
-            sf::RectangleShape cellRect(sf::Vector2f(100.0f, 100.0f));
-            cellRect.setPosition(i * 100, j * 100 + 50); // Ajoutez un décalage vertical pour éviter la superposition
-            cellRect.setOutlineColor(sf::Color::Black);
-            cellRect.setOutlineThickness(2.0f);
-
-            window.draw(cellRect);
-            grid[i][j].draw(window, i, j);
-        }
-    }
+    Xplay = !Xplay;
 }
 
 bool Grid::checkWin(char player)
@@ -105,3 +83,4 @@ bool Grid::isFull()
     }
     return true;
 }
+

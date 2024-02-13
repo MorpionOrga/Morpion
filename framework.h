@@ -1,4 +1,6 @@
+#pragma once
 //Include que nous allons utiliser
+#include <SFML/Graphics.hpp>
 #include <WinSock2.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -31,7 +31,7 @@ char Case::getValue()
     return value;
 }
 
-void Case::setValue()
+void Case::setValue(player* Player)
 {
-    this->value = Player.value;
+    this->value = Player->pList[Player->getIndexFromName(Player->currentPlayer)]->getValue();
 }
