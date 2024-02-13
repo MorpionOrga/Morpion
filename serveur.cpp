@@ -31,54 +31,6 @@ int yTest = 100;
 using namespace rapidjson;
 
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
-    WNDCLASSEXW wcex;
-
-    wcex.cbSize = sizeof(WNDCLASSEX);
-
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = WndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = 0;
-    wcex.hCursor = 0;
-    wcex.hbrBackground = 0;
-    wcex.lpszMenuName = 0;
-    wcex.lpszClassName = L"WNDCLASS";
-    wcex.hIconSm = 0;
-
-    return RegisterClassExW(&wcex);
-}
-
-class MyThread : public Thread
-{
-public:
-    virtual bool Run() override {
-        std::cout << "Thread started" << std::endl;
-        // Simulation d'une tâche
-        for (int i = 0; i < 5; ++i) {
-            std::cout << "Task " << i << std::endl;
-            Sleep(1000); // Attente d'une seconde
-        }
-        std::cout << "Thread finished" << std::endl;
-        return true;
-    }
-};
-
-
-
-HWND InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-    HWND hWnd = CreateWindowW(L"WNDCLASS", L"", WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-    return hWnd;
-}
-
 void handleClient(const std::string& jsonRequest)
 {
     rapidjson::Document document;
@@ -106,99 +58,6 @@ void handleClient(const std::string& jsonRequest)
     }
 }
 
-int main() {
-    int iResult;
-
-    // --test
-    MyThread thread;
-    if (thread.Start())
-        thread.Wait();
-
-    MyThread thread2;
-    if (thread2.Start())
-        thread2.Wait();
-
-    MyThread thread3;
-    thread3.Start();
-
-    MyThread thread4;
-    thread4.Start();
-    // --test
-
-    HINSTANCE hInstance = GetModuleHandle(0);
-    MyRegisterClass(hInstance);
-    HWND hWnd = InitInstance(hInstance, 0);
-
-    // initialisation de winsock
-    WSADATA wsaData;
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) {
-        printf("WSAStartup failed: %d\n", iResult);
-        return 1;
-    }
-    else {
-        std::cout << "WSAStartup successful\n";
-    }
-
-    // Création de la socket
-    SOCKET hsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (hsocket == INVALID_SOCKET) {
-        printf("socket failed\n");
-        WSACleanup();
-        return 1;
-    }
-    else {
-        std::cout << "Socket creation successful\n";
-    }
-
-    struct sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(PORT);
-    serverAddress.sin_addr.s_addr = INADDR_ANY;
-
-    // Liaison du socket
-    if (bind(hsocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
-        printf("Bind failed\n");
-        closesocket(hsocket);
-        WSACleanup();
-        return 1;
-    }
-    else {
-        std::cout << "Bind successful\n";
-    }
-
-    // Ecoute du socket
-    if (listen(hsocket, SOMAXCONN) == SOCKET_ERROR) {
-        printf("Listen failed\n");
-        closesocket(hsocket);
-        WSACleanup();
-        return 1;
-    }
-    else {
-        std::cout << "Listen successful\n";
-    }
-
-    if (WSAAsyncSelect(hsocket, hWnd, WM_ACCEPT, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR) {
-        printf("WSAAsyncSelect failed\n");
-        closesocket(hsocket);
-        WSACleanup();
-        return 1;
-    }
-    else {
-        std::cout << "WSAAsyncSelect successful\n";
-    }
-
-    MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
-
-    WSACleanup();
-
-    return 0;
-}
 
 SOCKET Accept;
 
@@ -247,5 +106,156 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+    return 0;
+}
+
+
+
+
+
+class ThreadServer : public Thread
+{
+public:
+    ThreadServer() : Thread() {  };
+
+    virtual bool Run() override {
+        
+        while(true) {}
+        return true;
+    }
+    virtual bool Start() override
+    {
+        std::cout << "Starting..." << std::endl;
+        m_threadHandle = CreateThread(nullptr, 0, Static_ThreadProc, (void*)this, 0, nullptr);
+        return (m_threadHandle != nullptr);
+    }
+
+    ATOM MyRegisterClass(HINSTANCE hInstance)
+    {
+        WNDCLASSEXW wcex;
+
+        wcex.cbSize = sizeof(WNDCLASSEX);
+
+        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.lpfnWndProc = WndProc;
+        wcex.cbClsExtra = 0;
+        wcex.cbWndExtra = 0;
+        wcex.hInstance = hInstance;
+        wcex.hIcon = 0;
+        wcex.hCursor = 0;
+        wcex.hbrBackground = 0;
+        wcex.lpszMenuName = 0;
+        wcex.lpszClassName = L"WNDCLASS";
+        wcex.hIconSm = 0;
+
+        return RegisterClassExW(&wcex);
+    }   
+
+
+
+    void InitInstance(HINSTANCE hInstance, int nCmdShow)
+    {
+        hWnd = CreateWindowW(L"WNDCLASS", L"", WS_OVERLAPPEDWINDOW,
+            CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+    }
+
+    virtual void OnThread() override
+    {
+        std::cout << "im gay" << std::endl;
+        hInstance = GetModuleHandle(0);
+        MyRegisterClass(hInstance);
+        
+        InitInstance(hInstance, 0);
+        
+        // Création de la socket
+        SOCKET hsocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (hsocket == INVALID_SOCKET) {
+            printf("socket failed\n");
+            WSACleanup();
+        }
+        else {
+            std::cout << "Socket creation successful\n";
+        }
+
+        struct sockaddr_in serverAddress;
+        serverAddress.sin_family = AF_INET;
+        serverAddress.sin_port = htons(PORT);
+        serverAddress.sin_addr.s_addr = INADDR_ANY;
+
+        // Liaison du socket
+        if (bind(hsocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR) {
+            printf("Bind failed\n");
+            closesocket(hsocket);
+            WSACleanup();
+        }
+        else {
+            std::cout << "Bind successful\n";
+        }
+
+        // Ecoute du socket
+        if (listen(hsocket, SOMAXCONN) == SOCKET_ERROR) {
+            printf("Listen failed\n");
+            closesocket(hsocket);
+            WSACleanup();
+        }
+        else {
+            std::cout << "Listen successful\n";
+        }
+
+        if (WSAAsyncSelect(hsocket, hWnd, WM_ACCEPT, FD_ACCEPT | FD_CLOSE) == SOCKET_ERROR) {
+            printf("WSAAsyncSelect failed\n");
+            closesocket(hsocket);
+            WSACleanup();
+
+        }
+        else {
+            std::cout << "WSAAsyncSelect successful\n";
+        }
+        
+    MSG msg;
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    }
+
+private :
+    HINSTANCE hInstance;
+    HWND hWnd;
+};
+
+
+
+
+
+
+
+int main() {
+    int iResult;
+    // initialisation de winsock
+    WSADATA wsaData;
+    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (iResult != 0) {
+        printf("WSAStartup failed: %d\n", iResult);
+        return 1;
+    }
+    else {
+        std::cout << "WSAStartup successful\n";
+    }
+
+    ThreadServer* threadServer = new ThreadServer();
+    threadServer->Start();
+    
+    MSG msg;
+    while (GetMessage(&msg, nullptr, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+
+    WSACleanup();
+
     return 0;
 }
