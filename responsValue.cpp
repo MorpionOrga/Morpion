@@ -32,3 +32,6 @@ void Message::sendMove(int x , int y ,int value , SOCKET socket) {
     // Envoie la chaîne JSON au client via la socket
     send(socket, buffer.GetString(), buffer.GetLength(), 0);
 }
+//
+//void Message::win(bool value , SOCKET socket)
+//{}

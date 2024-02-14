@@ -166,20 +166,17 @@ int main() {
     return 0;
 }
 
-SOCKET Accept;
+std::vector<SOCKET> acceptedSockets;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
     switch (message)
     {
     case WM_ACCEPT:
     {
-        // connexion des cleitn 
-        Accept = accept(wParam, nullptr, nullptr);
-        if (Accept == INVALID_SOCKET) {
+        SOCKET acceptSocket = accept(wParam, nullptr, nullptr);
+        if (acceptSocket == INVALID_SOCKET) {
             std::cout << "Erreur lors de l'acceptation de la connexion entrante." << std::endl;
-            closesocket(wParam);
             WSACleanup();
             return 1;
         }
@@ -187,9 +184,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             std::cout << "Acceptation de la connexion entrante." << std::endl;
         }
 
-        if (WSAAsyncSelect(Accept, hWnd, WM_READ, FD_READ | FD_CLOSE) == SOCKET_ERROR) {
+        acceptedSockets.push_back(acceptSocket);  // Ajoutez le nouveau socket à la liste
+
+        if (WSAAsyncSelect(acceptSocket, hWnd, WM_READ, FD_READ | FD_CLOSE) == SOCKET_ERROR) {
             printf("WSAAsyncSelect failed for clientSocket\n");
-            closesocket(Accept);
+            closesocket(acceptSocket);
             WSACleanup();
             return 1;
         }
@@ -200,18 +199,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     case WM_READ:
     {
-        // message des clients
-        char buffer[4096];
-        int bytesRead = recv(Accept, buffer, sizeof(buffer), 0);
-        buffer[bytesRead] = '\0';
-        handleClient(buffer , Accept);
+        // Messages des clients
+        for (SOCKET acceptedSocket : acceptedSockets) {
+            char buffer[4096];
+            int bytesRead = recv(acceptedSocket, buffer, sizeof(buffer), 0);
+            if (bytesRead > 0) {
+                buffer[bytesRead] = '\0';
+                handleClient(buffer, acceptedSocket);
+            }
+            else if (bytesRead == 0 || WSAGetLastError() == WSAECONNRESET) {
+                // Si le client s'est déconnecté, retirez le socket de la liste
+                closesocket(acceptedSocket);
+                acceptedSockets.erase(std::remove(acceptedSockets.begin(), acceptedSockets.end(), acceptedSocket), acceptedSockets.end());
+            }
+        }
         break;
     }
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
+    // ... (autres cas)
+
     return 0;
+    }
 }
