@@ -26,6 +26,8 @@
 #define WM_ACCEPT (WM_USER + 1) 
 #define WM_READ (WM_USER + 2) 
 
+CRITICAL_SECTION critical;
+
 int xTest = 100;
 int yTest = 100;
 using namespace rapidjson;
@@ -212,12 +214,12 @@ public:
             std::cout << "WSAAsyncSelect successful\n";
         }
         
-    MSG msg;
-    while (GetMessage(&msg, nullptr, 0, 0))
-    {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+        MSG msg;
+        while (GetMessage(&msg, nullptr, 0, 0))
+        {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
 
     }
 
@@ -233,6 +235,8 @@ private :
 
 
 int main() {
+    InitializeCriticalSection(&critical);
+
     int iResult;
     // initialisation de winsock
     WSADATA wsaData;
@@ -257,5 +261,6 @@ int main() {
 
     WSACleanup();
 
+    DeleteCriticalSection(&critical);
     return 0;
 }
