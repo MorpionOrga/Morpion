@@ -5,7 +5,7 @@ Message::Message()
     sendResponce = false;
 }
 
-void Message::sendMove(int x , int y ,int value , SOCKET socket) {
+void Message::sendMove(int x , int y ,int value , const std::vector<SOCKET>& sockets) {
     
     rapidjson::Document message;
     message.SetObject();
@@ -29,9 +29,52 @@ void Message::sendMove(int x , int y ,int value , SOCKET socket) {
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     message.Accept(writer);
 
-    // Envoie la chaîne JSON au client via la socket
-    send(socket, buffer.GetString(), buffer.GetLength(), 0);
+    // Parcourir tous les sockets dans le vecteur et envoyer le message à chacun
+    for (SOCKET socket : sockets) {
+        send(socket, buffer.GetString(), buffer.GetLength(), 0);
+    }
 }
-//
-//void Message::win(bool value , SOCKET socket)
-//{}
+
+void Message::win(int value , const std::vector<SOCKET>& sockets)
+{
+    rapidjson::Document message;
+    message.SetObject();
+
+    message.AddMember("type", "win", message.GetAllocator());
+
+    rapidjson::Value Value;
+    Value.SetInt(value);
+    message.AddMember("value", Value, message.GetAllocator());
+
+    // Convertit le document JSON en chaîne de caractères
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    message.Accept(writer);
+
+    // Parcourir tous les sockets dans le vecteur et envoyer le message à chacun
+    for (SOCKET socket : sockets) {
+        send(socket, buffer.GetString(), buffer.GetLength(), 0);
+    }
+}
+
+void Message::egalite(bool value, const std::vector<SOCKET>& sockets)
+{
+    rapidjson::Document message;
+    message.SetObject();
+
+    message.AddMember("type", "egalite", message.GetAllocator());
+
+    rapidjson::Value Value;
+    Value.SetBool(value);
+    message.AddMember("value", Value, message.GetAllocator());
+
+    // Convertit le document JSON en chaîne de caractères
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    message.Accept(writer);
+
+    // Parcourir tous les sockets dans le vecteur et envoyer le message à chacun
+    for (SOCKET socket : sockets) {
+        send(socket, buffer.GetString(), buffer.GetLength(), 0);
+    }
+}

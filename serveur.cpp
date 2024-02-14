@@ -12,6 +12,7 @@
 int xTest ;
 int yTest ;
 using namespace rapidjson;
+std::vector<SOCKET> acceptedSockets;
 
 player Player;
 Grid gridGame;
@@ -62,9 +63,21 @@ void handleClient(const std::string& jsonRequest , SOCKET hsocket)
             xTest = document["x"].GetInt();
             yTest = document["y"].GetInt();
             Player.currentPlayer = document["name"].GetString();
-            if (gridGame.handleEvent(&Player, xTest, yTest))
+            if (gridGame.checkWin(1))
             {
-                sendMSG.sendMove(xTest, yTest, gridGame.grid[xTest][yTest].getValue(), hsocket);
+                sendMSG.win(1, acceptedSockets);
+            }
+            else if (gridGame.checkWin(2))
+            {
+                sendMSG.win(2, acceptedSockets);
+            }
+            else if (gridGame.isFull())
+            {
+                sendMSG.egalite(true , acceptedSockets);
+            }
+            else if (gridGame.handleEvent(&Player, xTest, yTest))
+            {
+                sendMSG.sendMove(xTest, yTest, gridGame.grid[xTest][yTest].getValue(), acceptedSockets);
             }
             std::cout << "Received from client: (" << xTest << ", " << yTest << ")" << std::endl;
         }
@@ -166,7 +179,7 @@ int main() {
     return 0;
 }
 
-std::vector<SOCKET> acceptedSockets;
+
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {

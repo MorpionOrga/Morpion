@@ -13,7 +13,7 @@ Grid::Grid() : Xplay(true)
 
 bool Grid::handleEvent(player* player, int x, int y)
 {
-    if (grid[x][y].getValue() == 0 && !checkWin('X') && !checkWin('O'))
+    if (grid[x][y].getValue() == 0 && !checkWin(1) && !checkWin(2))
     {
         if (player->currentPlayer == player->pList[0]->playerName && Xplay) {
             grid[x][y].setValue(player);
@@ -75,7 +75,7 @@ bool Grid::isFull()
     {
         for (int j = 0; j < gridSize; ++j)
         {
-            if (grid[i][j].getValue() == ' ')
+            if (grid[i][j].getValue() == 0)
             {
                 return false;
             }

@@ -32,15 +32,18 @@ void player::addPlayer(std::string name) {
 			{
 				pList[i]->playerName = name;
 				pList[i]->value = 1;
+				i = 10;
 			}
 			else if (i == 1)
 			{
 				pList[i]->playerName = name;
 				pList[i]->value = 2;
+				i = 10;
 			}
 			else {
 				pList[i]->playerName = name;
 				pList[i]->value = 0;
+				i = 10;
 			}
 		}
 	}
