@@ -136,6 +136,7 @@
     <ClCompile Include="player.cpp" />
     <ClCompile Include="responsValue.cpp" />
     <ClCompile Include="serveur.cpp" />
+    <ClCompile Include="Thread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Case.h" />
@@ -144,6 +145,7 @@
     <ClInclude Include="player.h" />
     <ClInclude Include="responsValue.h" />
     <ClInclude Include="serveur.h" />
+    <ClInclude Include="Thread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
