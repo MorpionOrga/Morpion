@@ -135,6 +135,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="player.cpp" />
     <ClCompile Include="responsValue.cpp" />
+    <ClCompile Include="ServerWeb.cpp" />
     <ClCompile Include="serveur.cpp" />
     <ClCompile Include="Thread.cpp" />
   </ItemGroup>
@@ -142,6 +143,7 @@
     <ClInclude Include="Case.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="ServerWeb.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="responsValue.h" />
     <ClInclude Include="serveur.h" />
